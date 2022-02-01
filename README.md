@@ -23,7 +23,7 @@ This should build everything correctly.
 
 Then you can run the  class:
 
-Test_OledDisplay
+    Test_OledDisplay
 
 Note that you always need to call update() after you changed the content of the display
 to actually get the content displayed on the hardware.
