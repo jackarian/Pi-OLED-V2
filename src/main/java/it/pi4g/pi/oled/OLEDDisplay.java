@@ -26,18 +26,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package de.pi3g.pi.oled;
+package it.pi4g.pi.oled;
 
-import com.pi4j.io.i2c.I2CBus;
-import com.pi4j.io.i2c.I2CDevice;
-import com.pi4j.io.i2c.I2CFactory;
-import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.pi4j.Pi4J;
+import com.pi4j.context.Context;
+import com.pi4j.io.i2c.I2C;
+import com.pi4j.io.i2c.I2CConfig;
+
+import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.library.pigpio.PiGpio;
+import com.pi4j.library.pigpio.impl.PiGpioSocketImpl;
+import com.pi4j.plugin.pigpio.provider.i2c.PiGpioI2C;
+import com.pi4j.plugin.pigpio.provider.i2c.PiGpioI2CProvider;
+import com.pi4j.plugin.pigpio.provider.i2c.PiGpioI2CProviderImpl;
+import com.pi4j.provider.Provider;
 
 /**
  * A raspberry pi driver for the 128x64 pixel OLED display (i2c bus).
@@ -90,7 +100,7 @@ public class OLEDDisplay {
 
     private static final Logger LOGGER = Logger.getLogger(OLEDDisplay.class.getCanonicalName());
 
-    private static final int DEFAULT_I2C_BUS = I2CBus.BUS_1;
+    private static final int DEFAULT_I2C_BUS = 1;
     private static final int DEFAULT_DISPLAY_ADDRESS = 0x3C;
 
     private static final int DISPLAY_WIDTH = 128;
@@ -134,11 +144,13 @@ public class OLEDDisplay {
     private static final byte SSD1306_EXTERNALVCC = (byte) 0x1;
     private static final byte SSD1306_SWITCHCAPVCC = (byte) 0x2;
 
-    private final I2CBus bus;
-    private final I2CDevice device;
+    //private final I2CBus bus;
+    private final I2C device;
     private final Rotation rotation;
 
     private final byte[] imageBuffer = new byte[(DISPLAY_WIDTH * DISPLAY_HEIGHT) / 8];
+
+	private Context pi4j;
 
     /**
      * creates an OLED display object with default
@@ -148,7 +160,7 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay() throws IOException, UnsupportedBusNumberException {
+    public OLEDDisplay() throws IOException {
         this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, Rotation.DEG_0);
     }
 
@@ -160,7 +172,7 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay(int displayAddress) throws IOException, UnsupportedBusNumberException {
+    public OLEDDisplay(int displayAddress) throws IOException {
         this(DEFAULT_I2C_BUS, displayAddress, Rotation.DEG_0);
     }
 
@@ -173,7 +185,7 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay(int busNumber, int displayAddress) throws IOException, UnsupportedBusNumberException {
+    public OLEDDisplay(int busNumber, int displayAddress) throws IOException {
         this(busNumber, displayAddress, Rotation.DEG_0);
     }
 
@@ -186,7 +198,7 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay(Rotation rotation) throws IOException, UnsupportedBusNumberException {
+    public OLEDDisplay(Rotation rotation) throws IOException {
         this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, rotation);
     }
 
@@ -199,7 +211,7 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay(int displayAddress, Rotation rotation) throws IOException, UnsupportedBusNumberException {
+    public OLEDDisplay(int displayAddress, Rotation rotation) throws IOException {
         this(DEFAULT_I2C_BUS, displayAddress, rotation);
     }
 
@@ -212,9 +224,24 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay(int busNumber, int displayAddress, Rotation rotation) throws IOException, UnsupportedBusNumberException {
-        bus = I2CFactory.getInstance(busNumber);
-        device = bus.getDevice(displayAddress);
+    public OLEDDisplay(int busNumber, int displayAddress, Rotation rotation) throws IOException {
+    	 var pi4jb = Pi4J.newContextBuilder();
+         pi4jb.property("pigpio.remote", Boolean.TRUE.toString())
+         	  .property("remote", Boolean.TRUE.toString())
+         	  .property("host","mosquitto")
+              .property("pigpio.host", "mosquitto");
+    	pi4j = pi4jb.autoDetect().build();
+		I2CProvider i2CProvider = pi4j.provider("pigpio-i2c");
+		I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("TCA9534").bus(busNumber).device(displayAddress).build();
+		
+    	
+		
+    	
+		device =  i2CProvider.create(i2cConfig);
+		
+	
+        //bus = I2CFactory.getInstance(busNumber);
+        //device = bus.getDevice(displayAddress);
         this.rotation = rotation;
 
         LOGGER.log(Level.FINE, "Opened i2c bus");
@@ -223,14 +250,7 @@ public class OLEDDisplay {
 
         //add shutdown hook that clears the display
         //and closes the bus correctly when the software
-        //if terminated.
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                shutdown();
-            }
-        });
-
+        //if terminated.      
         init();
     }
 
@@ -238,7 +258,6 @@ public class OLEDDisplay {
         Arrays.fill(imageBuffer, (byte) 0x00);
     }
 
-    @SuppressWarnings("SuspiciousNameCombination")
     public int getWidth() {
         switch (rotation) {
             case DEG_90:
@@ -251,7 +270,6 @@ public class OLEDDisplay {
         }
     }
 
-    @SuppressWarnings("SuspiciousNameCombination")
     public int getHeight() {
         switch (rotation) {
             case DEG_90:
@@ -265,7 +283,8 @@ public class OLEDDisplay {
     }
 
     private void writeCommand(byte command) throws IOException {
-        device.write(0x00, command);
+        device.write((byte)0x00,command);
+     
     }
 
     private void init() throws IOException {
@@ -297,7 +316,6 @@ public class OLEDDisplay {
         writeCommand(SSD1306_DISPLAYON);//--turn on oled panel
     }
 
-    @SuppressWarnings("SuspiciousNameCombination")
     public synchronized void setPixel(int x, int y, boolean on) {
         switch (rotation) {
             default:
@@ -408,19 +426,29 @@ public class OLEDDisplay {
         writeCommand((byte) 7); // Page end address
 
         for (int i = 0; i < ((DISPLAY_WIDTH * DISPLAY_HEIGHT / 8) / 16); i++) {
-            // send a bunch of data in one xmission
-            device.write((byte) 0x40, imageBuffer, i * 16, 16);
+         // send a bunch of data in one xmission
+           // device.write(imageBuffer, i * 16, 16);
+            device.write(writeBytes(0x40, imageBuffer, i*16, 16));
         }
     }
+    public byte[] writeBytes(final int localAddress,final byte[] buffer,  final int offset,final int size) throws IOException {
+     
+            byte[] buf = new byte[size + 1];
 
-    private synchronized void shutdown() {
+            buf[0] = (byte)localAddress;
+
+            System.arraycopy(buffer, offset, buf, 1, size);
+            return buf;
+       
+    }
+    public synchronized void shutdown() {
         try {
             //before we shut down we clear the display
             clear();
             update();
-
+            pi4j.shutdown();
             //now we close the bus
-            bus.close();
+          //  bus.close();
         } catch (IOException ex) {
             LOGGER.log(Level.FINE, "Closing i2c bus");
         }

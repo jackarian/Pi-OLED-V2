@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.pi3g.pi.oled;
+package it.pi4g.pi.oled;
 
 /**
  *
