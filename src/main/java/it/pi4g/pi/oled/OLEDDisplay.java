@@ -225,11 +225,17 @@ public class OLEDDisplay {
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
     public OLEDDisplay(int busNumber, int displayAddress, Rotation rotation) throws IOException {
+    	
     	 var pi4jb = Pi4J.newContextBuilder();
+    	 /**
+    	  * Settings of a remote pigpio on raspberry.
+    	  * Other info on how to set Context is at this link https://pi4j.com/
+    	  */
          pi4jb.property("pigpio.remote", Boolean.TRUE.toString())
          	  .property("remote", Boolean.TRUE.toString())
          	  .property("host","mosquitto")
               .property("pigpio.host", "mosquitto");
+         
     	pi4j = pi4jb.autoDetect().build();
 		I2CProvider i2CProvider = pi4j.provider("pigpio-i2c");
 		I2CConfig i2cConfig = I2C.newConfigBuilder(pi4j).id("TCA9534").bus(busNumber).device(displayAddress).build();
@@ -246,9 +252,7 @@ public class OLEDDisplay {
 
         clear();
 
-        //add shutdown hook that clears the display
-        //and closes the bus correctly when the software
-        //if terminated.      
+      
         init();
     }
 
@@ -429,6 +433,15 @@ public class OLEDDisplay {
             device.write(writeBytes(0x40, imageBuffer, i*16, 16));
         }
     }
+    /**
+     * This is a convenient method to merge data to sent command to the ssd1306
+     * @param localAddress
+     * @param buffer
+     * @param offset
+     * @param size
+     * @return
+     * @throws IOException
+     */
     public byte[] writeBytes(final int localAddress,final byte[] buffer,  final int offset,final int size) throws IOException {
      
             byte[] buf = new byte[size + 1];
