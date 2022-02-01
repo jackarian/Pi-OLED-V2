@@ -33,9 +33,11 @@ Then you can run the  class:
 
 This class is only a wrapper to show how to use the main class:
 
-    OLEDDisplay display = new OLEDDisplay();
-    display.drawStringCentered("Hello World!", Font.FONT_5X8, 25, true);
-    display.update();
+    OLEDDisplay display  = new OLEDDisplay("mosquitto",8888);
+	display.drawStringCentered("Ciao World!", Font.FONT_5X8, 25, true);
+	display.update();
+	Thread.sleep(20000);
+	display.shutdown();
     
 Note that you always need to call update() after you changed the content of the display to actually get the content displayed on the hardware.
 Also note that the default constructor assumes you have connected the display to
