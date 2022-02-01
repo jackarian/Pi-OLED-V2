@@ -1,5 +1,5 @@
-Pi OLED Display
-===============
+Pi OLED Display based on library pi4j (https://pi4j.com)
+==========================================
 
 A Java library to drive the popular monochrome 128x64 pixel OLED display (SSD1306)
 from a Raspberry Pi. The display can be bought from Adafruit or from a lot of ebay
@@ -10,13 +10,6 @@ can be found here: https://github.com/adafruit/Adafruit_SSD1306
 
 how to use?
 ============
-You can then use the library in your Maven projects like this (it's on Maven Central):
-
-    <dependency>
-        <groupId>de.pi3g.pi</groupId>
-        <artifactId>pi-oled</artifactId>
-        <version>1.2</version>
-    </dependency>
 
 The hardware should be connected to the i2c bus. Where the i2c bus pins
 are located can be looked up e.g. here:
