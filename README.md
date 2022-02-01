@@ -32,3 +32,4 @@ Also note that the default constructor assumes you have connected the display to
 i2c port 1 and the display's i2c address is 0x3C. If this is not the case you
 can use one of the constructors with more parameters.
 
+This is an enached version based on the work of https://github.com/entrusc/Pi-OLED
