@@ -1,9 +1,5 @@
 package it.pi4g.pi.oled;
 
-import java.io.IOException;
-
-
-
 public class Test_OledDisplay {
 
 	/**
