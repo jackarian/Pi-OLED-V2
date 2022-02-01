@@ -239,9 +239,7 @@ public class OLEDDisplay {
     	
 		device =  i2CProvider.create(i2cConfig);
 		
-	
-        //bus = I2CFactory.getInstance(busNumber);
-        //device = bus.getDevice(displayAddress);
+	        
         this.rotation = rotation;
 
         LOGGER.log(Level.FINE, "Opened i2c bus");
