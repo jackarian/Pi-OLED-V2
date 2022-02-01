@@ -12,7 +12,7 @@ Motivation
 ===========================================================
 
 I dicided to develop this feature just to have possibility to drive raspberry GPIO using daemon pigpio, this can help you to focus on developing instead of 
-waste your time configuring machine.
+wasting your time configuring machine.
 
 how to use?
 ============
