@@ -2,11 +2,17 @@ Pi OLED Display based on library pi4j (https://pi4j.com)
 ========================================================
 
 A Java library to drive the popular monochrome 128x64 pixel OLED display (SSD1306)
-from a Raspberry Pi. The display can be bought from Adafruit or from a lot of ebay
+from a Raspberry Pi using remote control. The display can be bought from Adafruit or from a lot of ebay
 vendors.
 
 This is basically a rough port of Adafruit's SSD1306 library for Arduino which
 can be found here: https://github.com/adafruit/Adafruit_SSD1306
+
+Motivation
+===========================================================
+
+I dicided to develop this feature just to have possibility to drive raspberry GPIO using daemon pigpio, this can help you to focus on developing instead of 
+waste your time configuring machine.
 
 how to use?
 ============
