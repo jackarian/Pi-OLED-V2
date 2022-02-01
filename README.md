@@ -25,9 +25,13 @@ Then you can run the  class:
 
     Test_OledDisplay
 
-Note that you always need to call update() after you changed the content of the display
-to actually get the content displayed on the hardware.
+This class is only a wrapper to show how to use the main class:
 
+    OLEDDisplay display = new OLEDDisplay();
+    display.drawStringCentered("Hello World!", Font.FONT_5X8, 25, true);
+    display.update();
+    
+Note that you always need to call update() after you changed the content of the display to actually get the content displayed on the hardware.
 Also note that the default constructor assumes you have connected the display to
 i2c port 1 and the display's i2c address is 0x3C. If this is not the case you
 can use one of the constructors with more parameters.
