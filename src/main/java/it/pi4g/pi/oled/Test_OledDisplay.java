@@ -22,7 +22,7 @@ public class Test_OledDisplay {
 		
 		try {
 			System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
-			OLEDDisplay display  = new OLEDDisplay();
+			OLEDDisplay display  = new OLEDDisplay("mosquitto",8888);
 			
 			display.drawStringCentered("Ciao World!", Font.FONT_5X8, 25, true);
 			display.update();

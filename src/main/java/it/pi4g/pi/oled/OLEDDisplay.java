@@ -100,6 +100,10 @@ public class OLEDDisplay {
 
     private static final Logger LOGGER = Logger.getLogger(OLEDDisplay.class.getCanonicalName());
 
+    private static final int DEFAULT_REMOTE_PORT = 8888;
+    private static final String DEFAULT_HOST = "localhost";
+    
+    
     private static final int DEFAULT_I2C_BUS = 1;
     private static final int DEFAULT_DISPLAY_ADDRESS = 0x3C;
 
@@ -161,7 +165,7 @@ public class OLEDDisplay {
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
     public OLEDDisplay() throws IOException {
-        this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, Rotation.DEG_0);
+        this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, Rotation.DEG_0,DEFAULT_HOST,DEFAULT_REMOTE_PORT);
     }
 
     /**
@@ -173,7 +177,7 @@ public class OLEDDisplay {
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
     public OLEDDisplay(int displayAddress) throws IOException {
-        this(DEFAULT_I2C_BUS, displayAddress, Rotation.DEG_0);
+        this(DEFAULT_I2C_BUS, displayAddress, Rotation.DEG_0,DEFAULT_HOST,DEFAULT_REMOTE_PORT);
     }
 
     /**
@@ -186,7 +190,7 @@ public class OLEDDisplay {
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
     public OLEDDisplay(int busNumber, int displayAddress) throws IOException {
-        this(busNumber, displayAddress, Rotation.DEG_0);
+        this(busNumber, displayAddress, Rotation.DEG_0,DEFAULT_HOST,DEFAULT_REMOTE_PORT);
     }
 
     /**
@@ -199,7 +203,7 @@ public class OLEDDisplay {
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
     public OLEDDisplay(Rotation rotation) throws IOException {
-        this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, rotation);
+        this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, rotation,DEFAULT_HOST,DEFAULT_REMOTE_PORT);
     }
 
     /**
@@ -212,7 +216,16 @@ public class OLEDDisplay {
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
     public OLEDDisplay(int displayAddress, Rotation rotation) throws IOException {
-        this(DEFAULT_I2C_BUS, displayAddress, rotation);
+        this(DEFAULT_I2C_BUS, displayAddress, rotation,DEFAULT_HOST,DEFAULT_REMOTE_PORT);
+    }
+    /**
+     * 
+     * @param remoteHost
+     * @param remotePort
+     * @throws IOException
+     */
+    public OLEDDisplay(String remoteHost,int remotePort) throws IOException {
+        this(DEFAULT_I2C_BUS, DEFAULT_DISPLAY_ADDRESS, Rotation.DEG_0,remoteHost,remotePort);
     }
 
     /**
@@ -224,7 +237,7 @@ public class OLEDDisplay {
      * @throws IOException
      * @throws com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
      */
-    public OLEDDisplay(int busNumber, int displayAddress, Rotation rotation) throws IOException {
+    public OLEDDisplay(int busNumber, int displayAddress, Rotation rotation,String remoteHost, int remotePor) throws IOException {
     	
     	 var pi4jb = Pi4J.newContextBuilder();
     	 /**
@@ -233,8 +246,8 @@ public class OLEDDisplay {
     	  */
          pi4jb.property("pigpio.remote", Boolean.TRUE.toString())
          	  .property("remote", Boolean.TRUE.toString())
-         	  .property("host","mosquitto")
-              .property("pigpio.host", "mosquitto");
+         	  .property("host",remoteHost)
+              .property("pigpio.host", remoteHost);
          
     	pi4j = pi4jb.autoDetect().build();
 		I2CProvider i2CProvider = pi4j.provider("pigpio-i2c");
