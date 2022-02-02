@@ -2,11 +2,17 @@ Pi OLED Display based on library pi4j (https://pi4j.com)
 ========================================================
 
 A Java library to drive the popular monochrome 128x64 pixel OLED display (SSD1306)
-from a Raspberry Pi. The display can be bought from Adafruit or from a lot of ebay
+from a Raspberry Pi using remote control. The display can be bought from Adafruit or from a lot of ebay
 vendors.
 
 This is basically a rough port of Adafruit's SSD1306 library for Arduino which
 can be found here: https://github.com/adafruit/Adafruit_SSD1306
+
+Motivation
+===========================================================
+
+I dicided to develop this feature just to have possibility to drive raspberry GPIO using daemon pigpio, this can help you to focus on developing instead of 
+wasting your time configuring machine.
 
 how to use?
 ============
@@ -27,9 +33,11 @@ Then you can run the  class:
 
 This class is only a wrapper to show how to use the main class:
 
-    OLEDDisplay display = new OLEDDisplay();
-    display.drawStringCentered("Hello World!", Font.FONT_5X8, 25, true);
-    display.update();
+    OLEDDisplay display  = new OLEDDisplay("mosquitto",8888);
+	display.drawStringCentered("Ciao World!", Font.FONT_5X8, 25, true);
+	display.update();
+	Thread.sleep(20000);
+	display.shutdown();
     
 Note that you always need to call update() after you changed the content of the display to actually get the content displayed on the hardware.
 Also note that the default constructor assumes you have connected the display to
