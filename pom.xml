@@ -63,25 +63,29 @@
 			</roles>
 			<timezone>+1</timezone>
 		</developer>
+		<developer>
+			<id>jackarian</id>
+			<name>Giacomo Arianna</name>
+			<email>ariannagiacomo@gmail.com</email>
+			<organization>jackariansoft</organization>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>		
+		</developer>
 	</developers>
 
 	<dependencies>
-	<dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-		<!--  <dependency>
-			<groupId>com.pi4j</groupId>
-			<artifactId>pi4j-core</artifactId>
-			<version>1.2</version>
-		</dependency>-->
-		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
 		<!-- include Pi4J Core -->
 		<dependency>
 			<groupId>com.pi4j</groupId>
